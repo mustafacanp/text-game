@@ -1,6 +1,6 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useRef, useState, useEffect } from "react";
 import Line from "./components/Line/Line";
-import { FSEntry } from "./enums";
 import Prompt from "./components/Prompt/Prompt";
 import useEventListener from "./hooks/useEventListener";
 
@@ -68,10 +68,6 @@ function App() {
 
   const trim = (str) => str.trimStart().trimEnd();
   const removeSpaces = (text) => text.replace(/\s+/g, " ").trim();
-
-  const isDir = (obj) =>
-    !!(obj && FSEntry.parse(obj.type) === FSEntry.DIRECTORY);
-  const isFile = (obj) => !!(obj && FSEntry.parse(obj.type) === FSEntry.FILE);
 
   const handleKeyDown = (e) => {
     // Handles non-printable chars
