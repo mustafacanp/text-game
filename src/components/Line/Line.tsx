@@ -2,18 +2,18 @@ import React, { useEffect, useState } from "react";
 
 import styles from "./Line.module.scss";
 
-function Line({ command }) {
+function Line({ type, command }: { type: string; command: string }) {
   const [text, setText] = useState("");
 
   useEffect(() => {
-    if (command.type === "cout") {
-      speak(command.text, 30);
+    if (type === "cout") {
+      speak(command, 30);
     } else {
-      setText(command.text);
+      setText(command);
     }
-  }, [command]);
+  }, [command, type]);
 
-  const speak = (sentence, speed) => {
+  const speak = (sentence: string, speed: number) => {
     let index = 0;
     const timer = setInterval(function () {
       const char = sentence.charAt(index);
@@ -31,9 +31,7 @@ function Line({ command }) {
 
   return (
     <div className={styles.container}>
-      <span
-        className={`${styles.text} ${command.type === "cin" ? styles.cin : ""}`}
-      >
+      <span className={`${styles.text} ${type === "cin" ? styles.cin : ""}`}>
         {text}
       </span>
     </div>

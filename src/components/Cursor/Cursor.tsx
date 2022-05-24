@@ -1,11 +1,10 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import React, { useState, useEffect } from "react";
-import PropTypes from "prop-types";
+import { useState, useEffect } from "react";
 import useEventListener from "../../hooks/useEventListener";
 
 import styles from "./Cursor.module.scss";
 
-function Cursor({ promptText }) {
+function Cursor({ promptText }: { promptText: string }) {
   const [cursorLetter, setCursorLetter] = useState("");
   const [cursorFromTheRight, setCursorFromTheRight] = useState(0);
   const [cursorStyle, setCursorStyle] = useState({});
@@ -27,7 +26,7 @@ function Cursor({ promptText }) {
     setCursorStyle({});
   };
 
-  const handleKeyDown = (e) => {
+  const handleKeyDown = (e: React.KeyboardEvent) => {
     // Handles non-printable chars.
     switch (e.keyCode) {
       case 37:
@@ -72,9 +71,5 @@ function Cursor({ promptText }) {
     </span>
   );
 }
-
-Cursor.propTypes = {
-  promptText: PropTypes.string.isRequired,
-};
 
 export default Cursor;

@@ -7,16 +7,19 @@ import useEventListener from "./hooks/useEventListener";
 import styles from "./App.module.scss";
 
 window.isTouchDevice = () =>
-  navigator.maxTouchPoints || "ontouchstart" in document.documentElement;
+  !!navigator.maxTouchPoints || "ontouchstart" in document.documentElement;
 
 function App() {
-  const [promptText, setPromptText] = useState("");
-  const [currentLineFromHistory, setCurrentLineFromHistory] = useState(0);
-  const [previousLines, setPreviousLines] = useState([]);
-  const [previousInputs, setPreviousInputs] = useState([]);
+  const [promptText, setPromptText] = useState<string>("");
+  const [currentLineFromHistory, setCurrentLineFromHistory] =
+    useState<number>(0);
+  const [previousLines, setPreviousLines] = useState<
+    Array<{ type: string; text: string }>
+  >([]);
+  const [previousInputs, setPreviousInputs] = useState<Array<string>>([]);
 
-  const promptRef = useRef();
-  const terminalContainerRef = useRef();
+  const promptRef = useRef<HTMLInputElement>(null);
+  const terminalContainerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     focusTerminal();
@@ -39,7 +42,10 @@ function App() {
     if (currentLineFromHistory) updatePromptFromHistory();
   }, [currentLineFromHistory]);
 
-  const createNewLine = (type, text) => {
+  const createNewLine = (
+    type: string,
+    text: string
+  ): { type: string; text: string } => {
     return {
       type,
       text: trim(text),
@@ -60,24 +66,25 @@ function App() {
     focusTerminal();
   };
 
-  const updatePreviousInputs = (input) => {
+  const updatePreviousInputs = (input: string) => {
     if (input !== "") {
       setPreviousInputs([...previousInputs, input]);
     }
   };
 
-  const trim = (str) => str.trimStart().trimEnd();
-  const removeSpaces = (text) => text.replace(/\s+/g, " ").trim();
+  const trim = (str: string): string => str.trimStart().trimEnd();
+  const removeSpaces = (text: string): string =>
+    text.replace(/\s+/g, " ").trim();
 
-  const handleKeyDown = (e) => {
+  const handleKeyDown = (e: React.KeyboardEvent): any => {
     // Handles non-printable chars
     if (e.ctrlKey || e.altKey || e.key === "Shift") {
       e.preventDefault();
-      e.returnValue = false;
       return false;
     }
 
-    setPromptText(e.target.value);
+    const target = e.target as HTMLInputElement;
+    setPromptText(target.value);
 
     switch (e.keyCode) {
       case 13:
@@ -95,7 +102,7 @@ function App() {
   };
   useEventListener("keydown", handleKeyDown, promptRef.current);
 
-  const handleEnter = () => {
+  const handleEnter = (): void => {
     setCurrentLineFromHistory(0);
 
     const input = removeSpaces(promptText);
@@ -105,48 +112,51 @@ function App() {
     setPromptText("");
   };
 
-  const scrollBottomOnContainer = () => {
-    terminalContainerRef.current.scroll({
-      top: terminalContainerRef.current.scrollHeight,
-      behavior: "smooth",
-    });
+  const scrollBottomOnContainer = (): void => {
+    if (terminalContainerRef.current)
+      terminalContainerRef.current.scroll({
+        top: terminalContainerRef.current.scrollHeight,
+        behavior: "smooth",
+      });
   };
 
-  const handleUpArrow = (e) => {
+  const handleUpArrow = (e: React.KeyboardEvent): void => {
     e.preventDefault();
     if (currentLineFromHistory < previousInputs.length)
       setCurrentLineFromHistory(currentLineFromHistory + 1);
   };
 
-  const handleDownArrow = () => {
+  const handleDownArrow = (): void => {
     if (currentLineFromHistory > 1)
       setCurrentLineFromHistory(currentLineFromHistory - 1);
   };
 
-  const updatePromptFromHistory = () => {
+  const updatePromptFromHistory = (): void => {
     setPromptText(
       previousInputs[previousInputs.length - currentLineFromHistory]
     );
   };
 
-  const focusTerminal = () => {
-    promptRef.current.focus();
+  const focusTerminal = (): void => {
+    if (promptRef.current) {
+      promptRef.current.focus();
+    }
     scrollBottomOnContainer();
   };
   useEventListener("click", focusTerminal);
 
-  const copy = (text) => {
+  const copy = (text: string) => {
     if (navigator.clipboard) {
       navigator.clipboard.writeText(text);
     }
   };
 
-  const focusTerminalIfTouchDevice = (e) => {
+  const focusTerminalIfTouchDevice = (e: any): void => {
     if (e.buttons === 2) {
       // Copy selection on mouse right-click
       e.preventDefault();
-      if (window.getSelection().toString() !== "") {
-        copy(window.getSelection().toString());
+      if (window.getSelection() && window.getSelection()!.toString() !== "") {
+        copy(window.getSelection()!.toString());
       }
     }
     if (window.isTouchDevice()) {
@@ -158,20 +168,19 @@ function App() {
     <div className={styles.container}>
       <div
         className={styles.terminal}
-        onMouseDown={(e) => focusTerminalIfTouchDevice(e)}
+        onClick={focusTerminalIfTouchDevice}
+        onMouseDown={focusTerminalIfTouchDevice}
       >
         <div
           ref={terminalContainerRef}
           className={styles.terminalOutputContainer}
         >
           <div className={styles.terminalOutput}>
-            {previousLines.map((command, i) => (
-              <Line key={`line${i}`} command={command} />
+            {previousLines.map((line, i) => (
+              <Line key={`line${i}`} type={line.type} command={line.text} />
             ))}
             <Prompt
               ref={promptRef}
-              username={"settings.userName"}
-              computerName={"state.settings.computerName"}
               value={promptText}
               setValue={setPromptText}
             />
