@@ -47,7 +47,7 @@ function Cursor({ promptText }: { promptText: string }) {
   const moveCursor = () => {
     if (cursorFromTheRight <= promptText.length) {
       setCursorStyle({
-        marginLeft: -8.8 * cursorFromTheRight + "px",
+        marginLeft: -7.7 * cursorFromTheRight + "px",
       });
       setCursorLetter(promptText[promptText.length - cursorFromTheRight]);
     } else {

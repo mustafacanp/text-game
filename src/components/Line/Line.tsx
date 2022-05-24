@@ -21,7 +21,7 @@ function Line({ type, command }: { type: string; command: string }) {
         index = sentence.indexOf(">", index);
       }
 
-      setText(sentence.substr(0, index));
+      setText(sentence.substring(0, index));
 
       if (++index === sentence.length + 1) {
         clearInterval(timer);

@@ -34,7 +34,7 @@ body {
   width: 818px;
   height: 524px;
   box-shadow: 2px 4px 10px rgba(0, 0, 0, 0.5);
-  border: 4px dashed #aaa;
+  border: 3px dashed #aaa;
 
   position: absolute;
   bottom: auto;
@@ -49,7 +49,7 @@ body {
 .terminalOutputContainer {
   height: 50%;
   overflow-y: scroll;
-  border-bottom: 4px dashed #aaa;
+  border-bottom: 3px dashed #aaa;
 }
 .terminalOutputContainer::-webkit-scrollbar {
   width: 12px;

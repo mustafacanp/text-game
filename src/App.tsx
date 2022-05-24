@@ -1,13 +1,15 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { useRef, useState, useEffect } from "react";
 import Line from "./components/Line/Line";
-import Prompt from "./components/Prompt/Prompt";
+import PromptLine from "./components/PromptLine/PromptLine";
 import useEventListener from "./hooks/useEventListener";
 
 import styles from "./App.module.scss";
 
 window.isTouchDevice = () =>
   !!navigator.maxTouchPoints || "ontouchstart" in document.documentElement;
+
+type PrintType = "cin" | "cout";
 
 function App() {
   const [promptText, setPromptText] = useState<string>("");
@@ -23,7 +25,7 @@ function App() {
 
   useEffect(() => {
     focusTerminal();
-    cout("Hello World!");
+    print("Hello World!", "cout");
   }, []);
 
   useEffect(() => {
@@ -38,40 +40,6 @@ function App() {
     }, 100);
   }, [promptRef]);
 
-  useEffect(() => {
-    if (currentLineFromHistory) updatePromptFromHistory();
-  }, [currentLineFromHistory]);
-
-  const createNewLine = (
-    type: string,
-    text: string
-  ): { type: string; text: string } => {
-    return {
-      type,
-      text: trim(text),
-    };
-  };
-
-  const cin = (text = "") => {
-    const newLine = createNewLine("cin", text);
-    setPreviousLines([...previousLines, newLine]);
-    setPromptText("");
-    focusTerminal();
-  };
-
-  const cout = (text = "") => {
-    const newLine = createNewLine("cout", text);
-    setPreviousLines([...previousLines, newLine]);
-    setPromptText("");
-    focusTerminal();
-  };
-
-  const updatePreviousInputs = (input: string) => {
-    if (input !== "") {
-      setPreviousInputs([...previousInputs, input]);
-    }
-  };
-
   const trim = (str: string): string => str.trimStart().trimEnd();
   const removeSpaces = (text: string): string =>
     text.replace(/\s+/g, " ").trim();
@@ -82,7 +50,6 @@ function App() {
       e.preventDefault();
       return false;
     }
-
     const target = e.target as HTMLInputElement;
     setPromptText(target.value);
 
@@ -104,21 +71,30 @@ function App() {
 
   const handleEnter = (): void => {
     setCurrentLineFromHistory(0);
-
     const input = removeSpaces(promptText);
-    if (input !== "") cin(input);
+    if (input !== "") print(input, "cin");
 
     updatePreviousInputs(input);
     setPromptText("");
   };
 
-  const scrollBottomOnContainer = (): void => {
-    if (terminalContainerRef.current)
-      terminalContainerRef.current.scroll({
-        top: terminalContainerRef.current.scrollHeight,
-        behavior: "smooth",
-      });
+  const updatePreviousInputs = (input: string) => {
+    if (input !== "") {
+      setPreviousInputs([...previousInputs, input]);
+    }
   };
+
+  const print = (text = "", type: PrintType) => {
+    const newLine = createNewLine(type, text);
+    setPreviousLines([...previousLines, newLine]);
+    setPromptText("");
+    focusTerminal();
+  };
+
+  // Up and down arrows to navigate in the command history
+  useEffect(() => {
+    if (currentLineFromHistory) updatePromptFromHistory();
+  }, [currentLineFromHistory]);
 
   const handleUpArrow = (e: React.KeyboardEvent): void => {
     e.preventDefault();
@@ -137,6 +113,14 @@ function App() {
     );
   };
 
+  const scrollBottomOnContainer = (): void => {
+    if (terminalContainerRef.current)
+      terminalContainerRef.current.scroll({
+        top: terminalContainerRef.current.scrollHeight,
+        behavior: "smooth",
+      });
+  };
+
   const focusTerminal = (): void => {
     if (promptRef.current) {
       promptRef.current.focus();
@@ -144,6 +128,16 @@ function App() {
     scrollBottomOnContainer();
   };
   useEventListener("click", focusTerminal);
+
+  const createNewLine = (
+    type: PrintType,
+    text: string
+  ): { type: PrintType; text: string } => {
+    return {
+      type,
+      text: trim(text),
+    };
+  };
 
   const copy = (text: string) => {
     if (navigator.clipboard) {
@@ -179,10 +173,11 @@ function App() {
             {previousLines.map((line, i) => (
               <Line key={`line${i}`} type={line.type} command={line.text} />
             ))}
-            <Prompt
+            <PromptLine
               ref={promptRef}
               value={promptText}
               setValue={setPromptText}
+              username={"afsfsa"}
             />
           </div>
         </div>
