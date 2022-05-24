@@ -1,16 +1,18 @@
-import React from "react";
+import { forwardRef } from "react";
 import Cursor from "../Cursor/Cursor";
-import PropTypes from "prop-types";
 
 import styles from "../Prompt/Prompt.module.scss";
 import lineStyles from "../Line/Line.module.scss";
 
-const Prompt = React.forwardRef(({ value, setValue }, ref) => {
+const Prompt = forwardRef<
+  HTMLInputElement,
+  { value: string; setValue: (s: string) => void }
+>(({ value, setValue }, ref) => {
   return (
     <div className={`${lineStyles.container} ${styles.inputContainer}`}>
       <input
-        className={styles.input}
         ref={ref}
+        className={styles.input}
         value={value}
         onChange={(e) => setValue(e.target.value)}
       />
@@ -19,10 +21,5 @@ const Prompt = React.forwardRef(({ value, setValue }, ref) => {
     </div>
   );
 });
-
-Prompt.propTypes = {
-  username: PropTypes.string.isRequired,
-  computerName: PropTypes.string.isRequired,
-};
 
 export default Prompt;
