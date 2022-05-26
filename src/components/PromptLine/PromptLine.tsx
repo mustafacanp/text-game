@@ -6,8 +6,13 @@ import lineStyles from "../Line/Line.module.scss";
 
 const PromptLine = forwardRef<
   HTMLInputElement,
-  { value: string; setValue: (s: string) => void; username: string }
->(({ value, setValue, username }, ref) => {
+  {
+    value: string;
+    setValue: (s: string) => void;
+    username: string;
+    textClassName: string;
+  }
+>(({ value, setValue, username, textClassName }, ref) => {
   return (
     <div className={`${lineStyles.container} ${styles.inputContainer}`}>
       <span className={lineStyles.text}> {`/usr/${username}>`}</span>
@@ -17,7 +22,11 @@ const PromptLine = forwardRef<
         value={value}
         onChange={(e) => setValue(e.target.value)}
       />
-      <span className={`${lineStyles.text} ${styles.inputText}`}>{value}</span>
+      <span
+        className={`${lineStyles.text} ${styles.inputText} ${textClassName}`}
+      >
+        {value}
+      </span>
       <Cursor promptText={value} />
     </div>
   );
