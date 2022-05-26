@@ -1,10 +1,5 @@
 import ek from "../utils/ek";
-import {
-  fakeNick,
-  badRace,
-  goodRace,
-  startingKingdom,
-} from "../utils/constants";
+import { fakeNick, badRace, goodRace, startingKingdom } from "../utils/constants";
 
 const dialogues = {
   username: {
@@ -17,13 +12,12 @@ const dialogues = {
     saveAnswer: (answer: string) => {
       // dialogueAnswers[this.keyName] = answer; // dialogueAnswers objesine diyalog key ve cevabı yazdırdık
       // options.name = answer; // options objesindeki name özelliğine gelen cevabı yazdırdık
-    },
+    }
   },
   usernick: {
     id: 2,
     type: "text",
-    question:
-      "Peki sana nasıl hitap etmemi istersin? Lordum, yabancı, kanka ya da ne istersen.",
+    question: "Peki sana nasıl hitap etmemi istersin? Lordum, yabancı, kanka ya da ne istersen.",
     printText: () => {
       return (
         "Tamam <span class='green'>" +
@@ -42,7 +36,7 @@ const dialogues = {
     saveAnswer: (answer: string) => {
       // dialogueAnswers[this.keyName] = answer; // dialogueAnswers objesine diyalog key ve cevabı yazdırdık
       // options.nickName = answer; // options objesindeki name özelliğine gelen cevabı yazdırdık
-    },
+    }
   },
   doYouLikeBeer: {
     id: 3,
@@ -55,7 +49,7 @@ const dialogues = {
         saveAnswer: (keyName: string) => {
           // dialogueAnswers[keyName] = this.inputText;
           // return "OK, man nice.";
-        },
+        }
       },
       {
         id: 2,
@@ -63,7 +57,7 @@ const dialogues = {
         saveAnswer: (keyName: string) => {
           // dialogueAnswers[keyName] = this.inputText;
           // return "OK man, calm down..";
-        },
+        }
       },
       {
         id: 3,
@@ -71,9 +65,9 @@ const dialogues = {
         saveAnswer: (keyName: string) => {
           // dialogueAnswers[keyName] = this.inputText;
           // return "Wow maan... Take it and end this fucking game!";
-        },
-      },
-    ],
+        }
+      }
+    ]
   },
   fight: {
     id: 4,
@@ -91,7 +85,7 @@ const dialogues = {
           // $("#container-info").css("display", "block"); // TODO: #container-info göster
           // const goblin = new Goblin();
           // startFight(goblin, 1);
-        },
+        }
       },
       {
         id: 2,
@@ -100,10 +94,10 @@ const dialogues = {
           // dialogueAnswers[keyName] = this.inputText;
           // return "Koşarak uzaklaştın...";
         },
-        action: (keyName: string) => {},
-      },
-    ],
-  },
+        action: (keyName: string) => {}
+      }
+    ]
+  }
 };
 
 export default dialogues;

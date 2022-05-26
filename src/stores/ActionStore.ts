@@ -18,12 +18,12 @@ const useStore = create<ActionStore>((set) => ({
   updateAction: (action: string | null) => set(() => ({ action })),
   increaseFinishedAction: () =>
     set((state) => ({
-      finishedAction: state.finishedAction + 1,
+      finishedAction: state.finishedAction + 1
     })),
   increaseDialogueCount: () =>
     set((state) => ({
-      dialogueCount: state.dialogueCount + 1,
-    })),
+      dialogueCount: state.dialogueCount + 1
+    }))
 }));
 
 export default useStore;

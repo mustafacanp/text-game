@@ -9,18 +9,14 @@ import useStoryStore from "./stores/StoryStore";
 
 import styles from "./App.module.scss";
 
-window.isTouchDevice = () =>
-  !!navigator.maxTouchPoints || "ontouchstart" in document.documentElement;
+window.isTouchDevice = () => !!navigator.maxTouchPoints || "ontouchstart" in document.documentElement;
 
 type PrintType = "cin" | "cout";
 
 function App() {
   const [promptText, setPromptText] = useState<string>("");
-  const [currentLineFromHistory, setCurrentLineFromHistory] =
-    useState<number>(0);
-  const [previousLines, setPreviousLines] = useState<
-    Array<{ type: string; text: string }>
-  >([]);
+  const [currentLineFromHistory, setCurrentLineFromHistory] = useState<number>(0);
+  const [previousLines, setPreviousLines] = useState<Array<{ type: string; text: string }>>([]);
   const [commandHistory, setCommandHistory] = useState<Array<string>>([]);
   const [hasShakeClass, setHasShakeClass] = useState<boolean>(false);
 
@@ -31,9 +27,7 @@ function App() {
 
   // ActionStore
   const updateAction = useActionStore((state) => state.updateAction);
-  const increaseFinishedAction = useActionStore(
-    (state) => state.increaseFinishedAction
-  );
+  const increaseFinishedAction = useActionStore((state) => state.increaseFinishedAction);
 
   // StoryStore
   const stories = useStoryStore((state) => state.stories);
@@ -116,8 +110,8 @@ function App() {
       ...prevState,
       {
         type,
-        text: trim(s),
-      },
+        text: trim(s)
+      }
     ]);
 
     if (type === "cin") {
@@ -140,26 +134,22 @@ function App() {
 
   const handleArrowUp = (e: React.KeyboardEvent): void => {
     e.preventDefault();
-    if (currentLineFromHistory < commandHistory.length)
-      setCurrentLineFromHistory(currentLineFromHistory + 1);
+    if (currentLineFromHistory < commandHistory.length) setCurrentLineFromHistory(currentLineFromHistory + 1);
   };
 
   const handleArrowDown = (): void => {
-    if (currentLineFromHistory > 1)
-      setCurrentLineFromHistory(currentLineFromHistory - 1);
+    if (currentLineFromHistory > 1) setCurrentLineFromHistory(currentLineFromHistory - 1);
   };
 
   const updatePromptFromHistory = (): void => {
-    setPromptText(
-      commandHistory[commandHistory.length - currentLineFromHistory]
-    );
+    setPromptText(commandHistory[commandHistory.length - currentLineFromHistory]);
   };
 
   const scrollBottomOnContainer = (): void => {
     if (terminalContainerRef.current)
       terminalContainerRef.current.scroll({
         top: terminalContainerRef.current.scrollHeight,
-        behavior: "smooth",
+        behavior: "smooth"
       });
   };
 
@@ -208,15 +198,8 @@ function App() {
 
   return (
     <div className={styles.container}>
-      <div
-        className={styles.terminal}
-        onClick={focusTerminalIfTouchDevice}
-        onMouseDown={focusTerminalIfTouchDevice}
-      >
-        <div
-          ref={terminalContainerRef}
-          className={styles.terminalOutputContainer}
-        >
+      <div className={styles.terminal} onClick={focusTerminalIfTouchDevice} onMouseDown={focusTerminalIfTouchDevice}>
+        <div ref={terminalContainerRef} className={styles.terminalOutputContainer}>
           {/* TODO: remove this element */}
           <span
             style={{
@@ -226,7 +209,7 @@ function App() {
               position: "absolute",
               right: 5,
               top: 5,
-              borderRadius: "50%",
+              borderRadius: "50%"
             }}
           ></span>
           <div className={styles.terminalOutput}>

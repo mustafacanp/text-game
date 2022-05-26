@@ -23,8 +23,8 @@ const useStore = create<UIStore>((set) => ({
   is_fighting: false,
   setIsWriting: (isWriting: boolean) =>
     set(() => ({
-      isWriting,
-    })),
+      isWriting
+    }))
 }));
 
 export default useStore;

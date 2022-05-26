@@ -33,9 +33,7 @@ function Line({ type, command }: { type: string; command: string }) {
 
   return (
     <div className={styles.container}>
-      <span className={`${styles.text} ${type === "cin" ? styles.cin : ""}`}>
-        {text}
-      </span>
+      <span className={`${styles.text} ${type === "cin" ? styles.cin : ""}`}>{text}</span>
     </div>
   );
 }
