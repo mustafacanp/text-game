@@ -1,29 +1,31 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
+import useUIStore from "../../stores/UIStore";
 
 import styles from "./Line.module.scss";
 
 function Line({ type, command }: { type: string; command: string }) {
   const [text, setText] = useState("");
+  const textSpeed = useUIStore((state) => state.textSpeed);
 
   useEffect(() => {
     if (type === "cout") {
-      speak(command, 30);
+      speak(command, textSpeed);
     } else {
       setText(command);
     }
-  }, [command, type]);
+  }, [command, type, textSpeed]);
 
-  const speak = (sentence: string, speed: number) => {
+  const speak = (s: string, speed: number) => {
     let index = 0;
     const timer = setInterval(function () {
-      const char = sentence.charAt(index);
+      const char = s.charAt(index);
       if (char === "<") {
-        index = sentence.indexOf(">", index);
+        index = s.indexOf(">", index);
       }
 
-      setText(sentence.substring(0, index));
+      setText(s.substring(0, index));
 
-      if (++index === sentence.length + 1) {
+      if (++index === s.length + 1) {
         clearInterval(timer);
       }
     }, speed);

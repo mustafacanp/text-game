@@ -3,6 +3,9 @@ import React, { useRef, useState, useEffect } from "react";
 import Line from "./components/Line/Line";
 import PromptLine from "./components/PromptLine/PromptLine";
 import useEventListener from "./hooks/useEventListener";
+import useUIStore from "./stores/UIStore";
+import useActionStore from "./stores/ActionStore";
+import useStoryStore from "./stores/StoryStore";
 
 import styles from "./App.module.scss";
 
@@ -18,14 +21,34 @@ function App() {
   const [previousLines, setPreviousLines] = useState<
     Array<{ type: string; text: string }>
   >([]);
-  const [previousInputs, setPreviousInputs] = useState<Array<string>>([]);
+  const [commandHistory, setCommandHistory] = useState<Array<string>>([]);
+  const [hasShakeClass, setHasShakeClass] = useState<boolean>(false);
+
+  // UIStore
+  const textSpeed = useUIStore((state) => state.textSpeed);
+  const isWriting = useUIStore((state) => state.isWriting);
+  const setIsWriting = useUIStore((state) => state.setIsWriting);
+
+  // ActionStore
+  const updateAction = useActionStore((state) => state.updateAction);
+  const increaseFinishedAction = useActionStore(
+    (state) => state.increaseFinishedAction
+  );
+
+  // StoryStore
+  const stories = useStoryStore((state) => state.stories);
+  const increaseStoryCount = useStoryStore((state) => state.increaseStoryCount);
+  const setStoryShown = useStoryStore((state) => state.setStoryShown);
 
   const promptRef = useRef<HTMLInputElement>(null);
   const terminalContainerRef = useRef<HTMLDivElement>(null);
 
+  const init = async () => {
+    await showStory("story1");
+  };
+
   useEffect(() => {
-    focusTerminal();
-    print("Hello World!", "cout");
+    init();
   }, []);
 
   useEffect(() => {
@@ -33,16 +56,13 @@ function App() {
   }, [promptText]);
 
   useEffect(() => {
-    setTimeout(() => {
-      if (promptRef.current) {
-        focusTerminal();
-      }
-    }, 100);
+    if (promptRef.current) {
+      focusTerminal();
+    }
   }, [promptRef]);
 
   const trim = (str: string): string => str.trimStart().trimEnd();
-  const removeSpaces = (text: string): string =>
-    text.replace(/\s+/g, " ").trim();
+  const removeSpaces = (s: string): string => s.replace(/\s+/g, " ").trim();
 
   const handleKeyDown = (e: React.KeyboardEvent): any => {
     // Handles non-printable chars
@@ -53,42 +73,64 @@ function App() {
     const target = e.target as HTMLInputElement;
     setPromptText(target.value);
 
-    switch (e.keyCode) {
-      case 13:
-        handleEnter();
-        break; // enter
-      case 38:
-        handleUpArrow(e);
-        break; // up
-      case 40:
-        handleDownArrow();
-        break; // down
+    switch (e.key) {
+      case "Enter":
+        isWriting ? addShakeClass() : handleEnter();
+        break;
+      case "ArrowUp":
+        handleArrowUp(e);
+        break;
+      case "ArrowDown":
+        handleArrowDown();
+        break;
       default:
         break;
     }
   };
   useEventListener("keydown", handleKeyDown, promptRef.current);
 
-  const handleEnter = (): void => {
+  const handleEnter = async () => {
     setCurrentLineFromHistory(0);
     const input = removeSpaces(promptText);
-    if (input !== "") print(input, "cin");
-
-    updatePreviousInputs(input);
-    setPromptText("");
+    if (input !== "") await print(input, "cin");
   };
 
-  const updatePreviousInputs = (input: string) => {
+  const addShakeClass = () => {
+    setHasShakeClass(true);
+    setTimeout(() => {
+      setHasShakeClass(false);
+      // timeout should be the same with animation speed (0.8s, see `.shake` style on the App.module.scss)
+    }, 800);
+  };
+
+  const addCommandToHistory = (input: string) => {
     if (input !== "") {
-      setPreviousInputs([...previousInputs, input]);
+      setCommandHistory((prevState) => [...prevState, input]);
     }
   };
 
-  const print = (text = "", type: PrintType) => {
-    const newLine = createNewLine(type, text);
-    setPreviousLines([...previousLines, newLine]);
-    setPromptText("");
-    focusTerminal();
+  const print = async (s = "", type: PrintType = "cout") => {
+    setIsWriting(true);
+    // TODO: set add to quee inserted prints
+    setPreviousLines((prevState) => [
+      ...prevState,
+      {
+        type,
+        text: trim(s),
+      },
+    ]);
+
+    if (type === "cin") {
+      addCommandToHistory(s);
+      setPromptText("");
+    }
+
+    return new Promise((resolve) => {
+      setTimeout(() => {
+        resolve("resolved");
+        setIsWriting(false);
+      }, textSpeed * s.length + 100);
+    });
   };
 
   // Up and down arrows to navigate in the command history
@@ -96,20 +138,20 @@ function App() {
     if (currentLineFromHistory) updatePromptFromHistory();
   }, [currentLineFromHistory]);
 
-  const handleUpArrow = (e: React.KeyboardEvent): void => {
+  const handleArrowUp = (e: React.KeyboardEvent): void => {
     e.preventDefault();
-    if (currentLineFromHistory < previousInputs.length)
+    if (currentLineFromHistory < commandHistory.length)
       setCurrentLineFromHistory(currentLineFromHistory + 1);
   };
 
-  const handleDownArrow = (): void => {
+  const handleArrowDown = (): void => {
     if (currentLineFromHistory > 1)
       setCurrentLineFromHistory(currentLineFromHistory - 1);
   };
 
   const updatePromptFromHistory = (): void => {
     setPromptText(
-      previousInputs[previousInputs.length - currentLineFromHistory]
+      commandHistory[commandHistory.length - currentLineFromHistory]
     );
   };
 
@@ -129,19 +171,9 @@ function App() {
   };
   useEventListener("click", focusTerminal);
 
-  const createNewLine = (
-    type: PrintType,
-    text: string
-  ): { type: PrintType; text: string } => {
-    return {
-      type,
-      text: trim(text),
-    };
-  };
-
-  const copy = (text: string) => {
+  const copy = (s: string) => {
     if (navigator.clipboard) {
-      navigator.clipboard.writeText(text);
+      navigator.clipboard.writeText(s);
     }
   };
 
@@ -158,6 +190,22 @@ function App() {
     }
   };
 
+  // Story actions
+  const showStory = async (storyName: string) => {
+    const story = stories.find((s) => s.name === storyName);
+    if (story) {
+      const index = stories.indexOf(story);
+      // Print the story and an empty line end of the story
+      await print(story.text);
+      await print("");
+
+      setStoryShown(index, true);
+      increaseStoryCount();
+      increaseFinishedAction();
+      updateAction("story");
+    }
+  };
+
   return (
     <div className={styles.container}>
       <div
@@ -169,6 +217,18 @@ function App() {
           ref={terminalContainerRef}
           className={styles.terminalOutputContainer}
         >
+          {/* TODO: remove this element */}
+          <span
+            style={{
+              backgroundColor: isWriting ? "red" : "green",
+              height: 20,
+              width: 20,
+              position: "absolute",
+              right: 5,
+              top: 5,
+              borderRadius: "50%",
+            }}
+          ></span>
           <div className={styles.terminalOutput}>
             {previousLines.map((line, i) => (
               <Line key={`line${i}`} type={line.type} command={line.text} />
@@ -177,7 +237,8 @@ function App() {
               ref={promptRef}
               value={promptText}
               setValue={setPromptText}
-              username={"afsfsa"}
+              username={""}
+              textClassName={hasShakeClass ? styles.shake : ""}
             />
           </div>
         </div>
