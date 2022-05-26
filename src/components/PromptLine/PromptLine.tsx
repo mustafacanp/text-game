@@ -16,17 +16,8 @@ const PromptLine = forwardRef<
   return (
     <div className={`${lineStyles.container} ${styles.inputContainer}`}>
       <span className={lineStyles.text}> {`/usr/${username}>`}</span>
-      <input
-        ref={ref}
-        className={styles.input}
-        value={value}
-        onChange={(e) => setValue(e.target.value)}
-      />
-      <span
-        className={`${lineStyles.text} ${styles.inputText} ${textClassName}`}
-      >
-        {value}
-      </span>
+      <input ref={ref} className={styles.input} value={value} onChange={(e) => setValue(e.target.value)} />
+      <span className={`${lineStyles.text} ${styles.inputText} ${textClassName}`}>{value}</span>
       <Cursor promptText={value} />
     </div>
   );

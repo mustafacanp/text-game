@@ -47,7 +47,7 @@ function Cursor({ promptText }: { promptText: string }) {
   const moveCursor = () => {
     if (cursorFromTheRight <= promptText.length) {
       setCursorStyle({
-        marginLeft: -7.7 * cursorFromTheRight + "px",
+        marginLeft: -7.7 * cursorFromTheRight + "px"
       });
       setCursorLetter(promptText[promptText.length - cursorFromTheRight]);
     } else {
@@ -57,8 +57,7 @@ function Cursor({ promptText }: { promptText: string }) {
   };
 
   const handleLeftArrow = () => {
-    if (cursorFromTheRight < promptText.length)
-      setCursorFromTheRight(cursorFromTheRight + 1);
+    if (cursorFromTheRight < promptText.length) setCursorFromTheRight(cursorFromTheRight + 1);
   };
 
   const handleRightArrow = () => {

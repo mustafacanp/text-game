@@ -1,0 +1,6 @@
+{
+  "tabWidth": 2,
+  "max-len": 120,
+  "printWidth": 120,
+  "trailingComma": "none"
+}

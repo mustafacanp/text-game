@@ -15,5 +15,5 @@ export {
   goodRaceMountain,
   startingKingdom,
   startingVillage,
-  startingVillageMountain,
+  startingVillageMountain
 };

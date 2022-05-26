@@ -30,28 +30,13 @@ function ek(s: string, ekler: string) {
       s = _ler(s, ozelIsimMi);
       cogulMu = true;
     }
-    if (
-      eklerArr[i] === "ın" ||
-      eklerArr[i] === "in" ||
-      eklerArr[i] === "un" ||
-      eklerArr[i] === "ün"
-    ) {
+    if (eklerArr[i] === "ın" || eklerArr[i] === "in" || eklerArr[i] === "un" || eklerArr[i] === "ün") {
       s = _in(s, ozelIsimMi, yabanciMi);
     }
-    if (
-      eklerArr[i] === "a" ||
-      eklerArr[i] === "e" ||
-      eklerArr[i] === "u" ||
-      eklerArr[i] === "ü"
-    ) {
+    if (eklerArr[i] === "a" || eklerArr[i] === "e" || eklerArr[i] === "u" || eklerArr[i] === "ü") {
       s = _e(s, ozelIsimMi, yabanciMi);
     }
-    if (
-      eklerArr[i] === "ı" ||
-      eklerArr[i] === "i" ||
-      eklerArr[i] === "u" ||
-      eklerArr[i] === "ü"
-    ) {
+    if (eklerArr[i] === "ı" || eklerArr[i] === "i" || eklerArr[i] === "u" || eklerArr[i] === "ü") {
       s = _i(s, ozelIsimMi, yabanciMi);
     }
     if (
@@ -79,16 +64,12 @@ function ek(s: string, ekler: string) {
     }
 
     if (
-      s.match(
-        /[aıou]$|[aıou][bcçdfgğhjklmnprsştvwxyz']$|[aıou][bcçdfgğhjklmnprsştvwxyz][bcçdfgğhjklmnprsştvwxyz]$/i
-      )
+      s.match(/[aıou]$|[aıou][bcçdfgğhjklmnprsştvwxyz']$|[aıou][bcçdfgğhjklmnprsştvwxyz][bcçdfgğhjklmnprsştvwxyz]$/i)
     ) {
       s += "lar";
     }
     if (
-      s.match(
-        /[eiöü]$|[eiöü][bcçdfgğhjklmnprsştvwxyz']$|[eiöü][bcçdfgğhjklmnprsştvwxyz][bcçdfgğhjklmnprsştvwxyz]$/i
-      )
+      s.match(/[eiöü]$|[eiöü][bcçdfgğhjklmnprsştvwxyz']$|[eiöü][bcçdfgğhjklmnprsştvwxyz][bcçdfgğhjklmnprsştvwxyz]$/i)
     ) {
       s += "ler";
     }
@@ -118,32 +99,16 @@ function ek(s: string, ekler: string) {
         s = unsuzYumusamasi(s);
       }
     }
-    if (
-      s.match(
-        /[aı].$|[aı][bcçdfgğhjklmnprsştvwxyz'].$|[aı][bcçdfgğhjklmnprsştvwxyz][bcçdfgğhjklmnprsştvwxyz].$/i
-      )
-    ) {
+    if (s.match(/[aı].$|[aı][bcçdfgğhjklmnprsştvwxyz'].$|[aı][bcçdfgğhjklmnprsştvwxyz][bcçdfgğhjklmnprsştvwxyz].$/i)) {
       s += "ın";
     }
-    if (
-      s.match(
-        /[ei].$|[ei][bcçdfgğhjklmnprsştvwxyz'].$|[ei][bcçdfgğhjklmnprsştvwxyz][bcçdfgğhjklmnprsştvwxyz].$/i
-      )
-    ) {
+    if (s.match(/[ei].$|[ei][bcçdfgğhjklmnprsştvwxyz'].$|[ei][bcçdfgğhjklmnprsştvwxyz][bcçdfgğhjklmnprsştvwxyz].$/i)) {
       s += "in";
     }
-    if (
-      s.match(
-        /[ou].$|[ou][bcçdfgğhjklmnprsştvwxyz'].$|[ou][bcçdfgğhjklmnprsştvwxyz][bcçdfgğhjklmnprsştvwxyz].$/i
-      )
-    ) {
+    if (s.match(/[ou].$|[ou][bcçdfgğhjklmnprsştvwxyz'].$|[ou][bcçdfgğhjklmnprsştvwxyz][bcçdfgğhjklmnprsştvwxyz].$/i)) {
       s += "un";
     }
-    if (
-      s.match(
-        /[öü].$|[öü][bcçdfgğhjklmnprsştvwxyz'].$|[öü][bcçdfgğhjklmnprsştvwxyz][bcçdfgğhjklmnprsştvwxyz].$/i
-      )
-    ) {
+    if (s.match(/[öü].$|[öü][bcçdfgğhjklmnprsştvwxyz'].$|[öü][bcçdfgğhjklmnprsştvwxyz][bcçdfgğhjklmnprsştvwxyz].$/i)) {
       s += "ün";
     }
 
@@ -200,32 +165,16 @@ function ek(s: string, ekler: string) {
         s = unsuzYumusamasi(s);
       }
     }
-    if (
-      s.match(
-        /[aı].$|[aı][bcçdfgğhjklmnprsştvwxyz'].$|[aı][bcçdfgğhjklmnprsştvwxyz][bcçdfgğhjklmnprsştvwxyz].$/i
-      )
-    ) {
+    if (s.match(/[aı].$|[aı][bcçdfgğhjklmnprsştvwxyz'].$|[aı][bcçdfgğhjklmnprsştvwxyz][bcçdfgğhjklmnprsştvwxyz].$/i)) {
       s += "ı";
     }
-    if (
-      s.match(
-        /[ei].$|[ei][bcçdfgğhjklmnprsştvwxyz'].$|[ei][bcçdfgğhjklmnprsştvwxyz][bcçdfgğhjklmnprsştvwxyz].$/i
-      )
-    ) {
+    if (s.match(/[ei].$|[ei][bcçdfgğhjklmnprsştvwxyz'].$|[ei][bcçdfgğhjklmnprsştvwxyz][bcçdfgğhjklmnprsştvwxyz].$/i)) {
       s += "i";
     }
-    if (
-      s.match(
-        /[ou].$|[ou][bcçdfgğhjklmnprsştvwxyz'].$|[ou][bcçdfgğhjklmnprsştvwxyz][bcçdfgğhjklmnprsştvwxyz].$/i
-      )
-    ) {
+    if (s.match(/[ou].$|[ou][bcçdfgğhjklmnprsştvwxyz'].$|[ou][bcçdfgğhjklmnprsştvwxyz][bcçdfgğhjklmnprsştvwxyz].$/i)) {
       s += "u";
     }
-    if (
-      s.match(
-        /[öü].$|[öü][bcçdfgğhjklmnprsştvwxyz'].$|[öü][bcçdfgğhjklmnprsştvwxyz][bcçdfgğhjklmnprsştvwxyz].$/i
-      )
-    ) {
+    if (s.match(/[öü].$|[öü][bcçdfgğhjklmnprsştvwxyz'].$|[öü][bcçdfgğhjklmnprsştvwxyz][bcçdfgğhjklmnprsştvwxyz].$/i)) {
       s += "ü";
     }
 

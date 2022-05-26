@@ -9,27 +9,23 @@ type StoryStore = {
   storyCount: number;
   getStoryByName: (name: string) => Story | undefined;
   increaseStoryCount: () => void;
-  setStoryShown: (_id: number, isShown: boolean) => void;
+  setStoryShown: (_id: number, hasShown: boolean) => void;
 };
 
 const useStore = create<StoryStore>((set, get) => ({
   stories,
   storyCount: 0,
-  getStoryByName: (name: string) =>
-    get().stories.find((story) => story.name === name),
+  getStoryByName: (name: string) => get().stories.find((story) => story.name === name),
   increaseStoryCount: () =>
     set((state) => ({
-      storyCount: state.storyCount + 1,
+      storyCount: state.storyCount + 1
     })),
-  setStoryShown: (_id: number, isShown: boolean) =>
+  setStoryShown: (_id: number, hasShown: boolean) =>
     set((state) => {
       return {
-        stories: [
-          ...state.stories,
-          (state.stories[_id] = { ...state.stories[_id], isShown }),
-        ],
+        stories: [...state.stories, (state.stories[_id] = { ...state.stories[_id], hasShown })]
       };
-    }),
+    })
 }));
 
 export default useStore;
