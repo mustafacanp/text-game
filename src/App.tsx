@@ -195,17 +195,16 @@ function App() {
   // Story actions
   const showStory = async (storyName: string) => {
     const story = stories.find((s) => s.name === storyName);
-    if (story) {
-      const index = stories.indexOf(story);
-      print(`${story.text}\n. . .`);
-      setStoryShown(index, true);
-      increaseStoryCount();
-      increaseFinishedAction();
-      setAction(storyName);
-      setActionType("story");
-    } else {
-      print("ERROR! Story missing.");
+    if (!story) {
+      return print("ERROR! Story missing.");
     }
+    const index = stories.indexOf(story);
+    print(`${story.text}\n. . .`);
+    setStoryShown(index, true);
+    increaseStoryCount();
+    increaseFinishedAction();
+    setAction(storyName);
+    setActionType("story");
   };
 
   function doAction() {
