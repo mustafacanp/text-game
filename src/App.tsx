@@ -7,6 +7,8 @@ import useUIStore from "./stores/UIStore";
 import useActionStore from "./stores/ActionStore";
 import useStoryStore from "./stores/StoryStore";
 
+import actions from "./data/actions.json";
+
 import styles from "./App.module.scss";
 
 window.isTouchDevice = () => !!navigator.maxTouchPoints || "ontouchstart" in document.documentElement;
@@ -19,14 +21,18 @@ function App() {
   const [previousLines, setPreviousLines] = useState<Array<{ type: string; text: string }>>([]);
   const [commandHistory, setCommandHistory] = useState<Array<string>>([]);
   const [hasShakeClass, setHasShakeClass] = useState<boolean>(false);
+  const [secondEnter, setSecondEnter] = useState<boolean>(false);
 
   // UIStore
-  const textSpeed = useUIStore((state) => state.textSpeed);
-  const isWriting = useUIStore((state) => state.isWriting);
-  const setIsWriting = useUIStore((state) => state.setIsWriting);
+  const cinEnabled = useUIStore((state) => state.cinEnabled);
+  const isTerminalSpeaking = useUIStore((state) => state.isTerminalSpeaking);
 
   // ActionStore
-  const updateAction = useActionStore((state) => state.updateAction);
+  const action = useActionStore((state) => state.action);
+  const actionType = useActionStore((state) => state.actionType);
+  const finishedAction = useActionStore((state) => state.finishedAction);
+  const setAction = useActionStore((state) => state.setAction);
+  const setActionType = useActionStore((state) => state.setActionType);
   const increaseFinishedAction = useActionStore((state) => state.increaseFinishedAction);
 
   // StoryStore
@@ -37,12 +43,8 @@ function App() {
   const promptRef = useRef<HTMLInputElement>(null);
   const terminalContainerRef = useRef<HTMLDivElement>(null);
 
-  const init = async () => {
-    await showStory("story1");
-  };
-
   useEffect(() => {
-    init();
+    doAction();
   }, []);
 
   useEffect(() => {
@@ -69,13 +71,16 @@ function App() {
 
     switch (e.key) {
       case "Enter":
-        isWriting ? addShakeClass() : handleEnter();
+        handleEnter();
         break;
       case "ArrowUp":
         handleArrowUp(e);
         break;
       case "ArrowDown":
         handleArrowDown();
+        break;
+      case "Escape":
+        handleEscape();
         break;
       default:
         break;
@@ -84,9 +89,24 @@ function App() {
   useEventListener("keydown", handleKeyDown, promptRef.current);
 
   const handleEnter = async () => {
-    setCurrentLineFromHistory(0);
-    const input = removeSpaces(promptText);
-    if (input !== "") await print(input, "cin");
+    if (isTerminalSpeaking) {
+      setSecondEnter(true);
+      return addShakeClass();
+    }
+    // Get user input or do next action from `src/data/actions.json`
+    if (cinEnabled) {
+      setCurrentLineFromHistory(0);
+      const input = removeSpaces(promptText);
+      if (input !== "") print(input, "cin");
+    } else {
+      doAction();
+    }
+  };
+
+  const handleEscape = () => {
+    if (isTerminalSpeaking) {
+      setSecondEnter(true);
+    }
   };
 
   const addShakeClass = () => {
@@ -103,8 +123,7 @@ function App() {
     }
   };
 
-  const print = async (s = "", type: PrintType = "cout") => {
-    setIsWriting(true);
+  const print = (s = "", type: PrintType = "cout") => {
     // TODO: set add to quee inserted prints
     setPreviousLines((prevState) => [
       ...prevState,
@@ -118,13 +137,6 @@ function App() {
       addCommandToHistory(s);
       setPromptText("");
     }
-
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        resolve("resolved");
-        setIsWriting(false);
-      }, textSpeed * s.length + 100);
-    });
   };
 
   // Up and down arrows to navigate in the command history
@@ -185,16 +197,37 @@ function App() {
     const story = stories.find((s) => s.name === storyName);
     if (story) {
       const index = stories.indexOf(story);
-      // Print the story and an empty line end of the story
-      await print(story.text);
-      await print("");
-
+      print(`${story.text}\n. . .`);
       setStoryShown(index, true);
       increaseStoryCount();
       increaseFinishedAction();
-      updateAction("story");
+      setAction(storyName);
+      setActionType("story");
+    } else {
+      print("ERROR! Story missing.");
     }
   };
+
+  function doAction() {
+    const nextAction = actions[finishedAction];
+    // console.log(finishedAction);
+    // console.log(nextAction);
+
+    switch (nextAction.type) {
+      case "story":
+        if (nextAction) showStory(nextAction.name);
+        break;
+      case "dialogue":
+        break;
+      case "dialogueAnswer":
+        break;
+      case "fight":
+        break;
+
+      default:
+        break;
+    }
+  }
 
   return (
     <div className={styles.container}>
@@ -203,7 +236,7 @@ function App() {
           {/* TODO: remove this element */}
           <span
             style={{
-              backgroundColor: isWriting ? "red" : "green",
+              backgroundColor: isTerminalSpeaking ? "red" : "green",
               height: 20,
               width: 20,
               position: "absolute",
@@ -214,7 +247,14 @@ function App() {
           ></span>
           <div className={styles.terminalOutput}>
             {previousLines.map((line, i) => (
-              <Line key={`line${i}`} type={line.type} command={line.text} />
+              <Line
+                key={`line${i}`}
+                type={line.type}
+                command={line.text}
+                scrollBottomOnContainer={scrollBottomOnContainer}
+                secondEnter={secondEnter}
+                setSecondEnter={setSecondEnter}
+              />
             ))}
             <PromptLine
               ref={promptRef}
