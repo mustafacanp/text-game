@@ -13,6 +13,7 @@ export type Story = {
   name: string;
   hasShown: boolean;
   text: string;
+  textSpeed?: number;
   action?: (...params: any) => void;
 };
 
@@ -26,7 +27,7 @@ const stories: Array<Story> = [
     )} hikayesini anlatayım. Enter'a basmadan önce çayını kahveni al gel istersen. Anlatacakların uzun sürebilir.`
   },
   {
-    name: "story2_2",
+    name: "story2",
     hasShown: false,
     text: `Bu ırklar tanrıları farklı olsa da yüzyıllarca barış içinde yaşadılar. Yüzyıllarca süren barış insanların başında olan zalim hükümdar ${ek(
       badHumanKing,
@@ -74,7 +75,7 @@ const stories: Array<Story> = [
   {
     name: "story7",
     hasShown: false,
-    text: `Su Tanrısı elinde rakı tepsisiyle geldi. Gelirken yanardağın altını açık unuttuğunu hatırlayan Ateş Tanrısı bir de rakısına su katıldığını görünce Su Tanrısı'na patladı ve dedi ki:<br />- 井の中の蛙、大海を知らず<br /> Ateş Tanrısı çok ağır konuşmuştu. Su Tanrısı hiddetle ayağa kalktı ve dedi ki:<br />+ 自業自得. 郷に入っては郷に従え`
+    text: `Su Tanrısı elinde rakı tepsisiyle geldi. Gelirken yanardağın altını açık unuttuğunu hatırlayan Ateş Tanrısı bir de rakısına su katıldığını görünce Su Tanrısı'na patladı ve dedi ki:\n- 井の中の蛙、大海を知らず\nAteş Tanrısı çok ağır konuşmuştu. Su Tanrısı hiddetle ayağa kalktı ve dedi ki:\n+ 自業自得. 郷に入っては郷に従え`
   },
   {
     name: "story8",
@@ -124,12 +125,13 @@ const stories: Array<Story> = [
   {
     name: "story13",
     hasShown: false,
-    text: `<del>Baban ... Pardon . . . </del>Annen seni doğurduktan sonra intihar etti. Onu hiçbir zaman görmedin. Deden seni zamanı geldiğinde ailen hakkındaki herşeyi anlatacağını söyleyerek büyüttü. Buradan sonrası artık zaten senin hayatın.`
+    text: `Baban... Pardon . . . Annen seni doğurduktan sonra intihar etti. Onu hiçbir zaman görmedin. Deden seni zamanı geldiğinde ailen hakkındaki herşeyi anlatacağını söyleyerek büyüttü. Buradan sonrası artık zaten senin hayatın.`
   },
   {
     name: "story14",
     hasShown: false,
-    text: `<div style='text-align:center;width:100%'>. . . . . . . . . . . . . . . . . . . . . . . . . .<br />. . . . . . . . . 4 sene sonra . . . . . . . . . . .<br />. . . . . . . . . . . . . . . . . . . . . . . . . .</div>`
+    text: `. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .\n. . . . . . . . . . . . . . . . . . . . . 4 sene sonra . . . . . . . . . . . . . . . . . . . . . . .\n. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .`,
+    textSpeed: 1000
   },
   // Stories with action
   {

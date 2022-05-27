@@ -7,10 +7,12 @@ type UIStore = {
   isMenuActive: boolean;
   textSpeed: number;
   current_dialogue_name: string;
-  isWriting: boolean;
+  cinEnabled: boolean;
+  isTerminalSpeaking: boolean;
   is_animating: boolean;
   is_fighting: boolean;
-  setIsWriting: (isWriting: boolean) => void;
+  setIsTerminalSpeaking: (isTerminalSpeaking: boolean) => void;
+  setCinEnabled: (isTerminalSpeaking: boolean) => void;
 };
 
 const useStore = create<UIStore>((set) => ({
@@ -18,12 +20,17 @@ const useStore = create<UIStore>((set) => ({
   isMenuActive: false,
   textSpeed: 30, // Text writing speed (ms per letter)
   current_dialogue_name: "", // action() içinde, action_type = "dialogue_answer" devam ediyor ise hangi diyaloğa cevap vereceğini tutuyor.
-  isWriting: false,
+  isTerminalSpeaking: false,
+  cinEnabled: false,
   is_animating: false,
   is_fighting: false,
-  setIsWriting: (isWriting: boolean) =>
+  setIsTerminalSpeaking: (isTerminalSpeaking: boolean) =>
     set(() => ({
-      isWriting
+      isTerminalSpeaking
+    })),
+  setCinEnabled: (cinEnabled: boolean) =>
+    set(() => ({
+      cinEnabled
     }))
 }));
 
