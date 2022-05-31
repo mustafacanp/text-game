@@ -75,7 +75,7 @@ const stories: Array<Story> = [
   {
     name: "story7",
     hasShown: false,
-    text: `Su Tanrısı elinde rakı tepsisiyle geldi. Gelirken yanardağın altını açık unuttuğunu hatırlayan Ateş Tanrısı bir de rakısına su katıldığını görünce Su Tanrısı'na patladı ve dedi ki:\n- 井の中の蛙、大海を知らず\nAteş Tanrısı çok ağır konuşmuştu. Su Tanrısı hiddetle ayağa kalktı ve dedi ki:\n+ 自業自得. 郷に入っては郷に従え`
+    text: `Su Tanrısı elinde rakı tepsisiyle geldi. Gelirken yanardağın altını açık unuttuğunu hatırlayan Ateş Tanrısı bir de rakısına su katıldığını görünce Su Tanrısı'na patladı ve dedi ki:<br/>- 井の中の蛙、大海を知らず\nAteş Tanrısı çok ağır konuşmuştu. Su Tanrısı hiddetle ayağa kalktı ve dedi ki:<br/>+ 自業自得. 郷に入っては郷に従え`
   },
   {
     name: "story8",
@@ -130,8 +130,8 @@ const stories: Array<Story> = [
   {
     name: "story14",
     hasShown: false,
-    text: `. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .\n. . . . . . . . . . . . . . . . . . . . . 4 sene sonra . . . . . . . . . . . . . . . . . . . . . . .\n. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .`,
-    textSpeed: 1000
+    text: `. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .<br/>. . . . . . . . . . . . . . . . . . . . . 4 sene sonra . . . . . . . . . . . . . . . . . . . . . . .<br/>. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .`,
+    textSpeed: 5
   },
   // Stories with action
   {

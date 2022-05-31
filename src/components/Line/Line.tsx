@@ -1,7 +1,12 @@
 import { useEffect, useState } from "react";
+import classnames from "classnames";
+import parse from "html-react-parser";
+
 import useUIStore from "../../stores/UIStore";
 
 import styles from "./Line.module.scss";
+
+export type Print = "cin" | "cout" | "choice";
 
 function Line({
   type,
@@ -11,7 +16,7 @@ function Line({
   scrollBottomOnContainer,
   textSpeed
 }: {
-  type: string;
+  type: Print;
   command: string;
   secondEnter: boolean;
   setSecondEnter: (secondEnter: boolean) => void;
@@ -19,8 +24,7 @@ function Line({
   textSpeed?: number;
 }) {
   const [text, setText] = useState<string>("");
-  const [timer, setTimer] = useState(0);
-  const [focusTimer, setFocusTimer] = useState(0);
+  const [intervals, setIntervals] = useState<{ [key: string]: number }>({});
 
   // UIStore
   const textSpeedStore = useUIStore((state) => state.textSpeed);
@@ -30,8 +34,7 @@ function Line({
 
   useEffect(() => {
     if (secondEnter) {
-      clearInterval(timer);
-      clearInterval(focusTimer);
+      clearIntervals();
       setText(command);
       setSecondEnter(false);
       setIsTerminalSpeaking(false);
@@ -55,34 +58,47 @@ function Line({
   const speak = (s: string) => {
     setIsTerminalSpeaking(true);
     let index = 0;
-    setFocusTimer(
-      window.setInterval(() => {
+    const timerId = Object.keys(intervals).length;
+
+    const timer: number = window.setInterval(() => {
+      scrollBottomOnContainer();
+    }, 300);
+
+    const timer2: number = window.setInterval(() => {
+      const char = s.charAt(index);
+      if (char === "<") {
+        index = s.indexOf(">", index);
+      }
+      setText(s.substring(0, index));
+      if (++index === s.length + 1) {
+        clearIntervals();
+        setSecondEnter(false);
+        setIsTerminalSpeaking(false);
         scrollBottomOnContainer();
-      }, 300)
-    );
-    setTimer(
-      window.setInterval(() => {
-        const char = s.charAt(index);
-        if (char === "<") {
-          index = s.indexOf(">", index);
-        }
+      }
+    }, speed);
 
-        setText(s.substring(0, index));
+    setIntervals({
+      [timerId]: timer,
+      [timerId + 1]: timer2
+    });
+  };
 
-        if (++index === s.length + 1) {
-          clearInterval(timer);
-          clearInterval(focusTimer);
-          setSecondEnter(false);
-          setIsTerminalSpeaking(false);
-          scrollBottomOnContainer();
-        }
-      }, speed)
-    );
+  const clearIntervals = () => {
+    // TODO: There is a bug here
+    // If text ends with speak, not second enter, it keeps running timers
+    // That triggers scroll bottom constantly and the user is not able to scroll up to see previous commands
+    // console.log(intervals);
+    for (let i = 0; i < Object.keys(intervals).length; i++) {
+      clearInterval(intervals[i]);
+    }
   };
 
   return (
     <div className={styles.container}>
-      <span className={`${styles.text} ${type === "cin" ? styles.cin : ""}`}>{text}</span>
+      <span className={classnames(styles.text, { [styles.cin]: type === "cin", [styles.choice]: type === "choice" })}>
+        {parse(text)}
+      </span>
     </div>
   );
 }

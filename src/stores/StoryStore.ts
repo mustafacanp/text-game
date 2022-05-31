@@ -1,5 +1,6 @@
 import create from "zustand";
 
+import immer from "./immer";
 import stories from "../data/stories";
 
 import type { Story } from "../data/stories";
@@ -12,20 +13,18 @@ type StoryStore = {
   setStoryShown: (_id: number, hasShown: boolean) => void;
 };
 
-const useStore = create<StoryStore>((set, get) => ({
+const useStoryStore = (set: any, get: any) => ({
   stories,
   storyCount: 0,
-  getStoryByName: (name: string) => get().stories.find((story) => story.name === name),
+  getStoryByName: (name: string) => get().stories.find((story: Story) => story.name === name),
   increaseStoryCount: () =>
-    set((state) => ({
+    set((state: StoryStore) => ({
       storyCount: state.storyCount + 1
     })),
   setStoryShown: (_id: number, hasShown: boolean) =>
-    set((state) => {
-      return {
-        stories: [...state.stories, (state.stories[_id] = { ...state.stories[_id], hasShown })]
-      };
+    set((state: StoryStore) => {
+      state.stories[_id].hasShown = hasShown;
     })
-}));
+});
 
-export default useStore;
+export default create<StoryStore>(immer(useStoryStore));
