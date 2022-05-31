@@ -5,40 +5,40 @@ import PromptLine from "./components/PromptLine/PromptLine";
 import useEventListener from "./hooks/useEventListener";
 import useUIStore from "./stores/UIStore";
 import useActionStore from "./stores/ActionStore";
-import useStoryStore from "./stores/StoryStore";
 
-import actions from "./data/actions.json";
+import useStory from "./hooks/useStory";
+import useDialog from "./hooks/useDialog";
+
+import actions from "./data/actions";
 
 import styles from "./App.module.scss";
 
+import type { Action } from "./data/actions";
+
 window.isTouchDevice = () => !!navigator.maxTouchPoints || "ontouchstart" in document.documentElement;
 
-type PrintType = "cin" | "cout";
-
 function App() {
-  const [promptText, setPromptText] = useState<string>("");
   const [currentLineFromHistory, setCurrentLineFromHistory] = useState<number>(0);
-  const [previousLines, setPreviousLines] = useState<Array<{ type: string; text: string }>>([]);
-  const [commandHistory, setCommandHistory] = useState<Array<string>>([]);
   const [hasShakeClass, setHasShakeClass] = useState<boolean>(false);
   const [secondEnter, setSecondEnter] = useState<boolean>(false);
 
+  const setStoryName = useStory();
+  const [setDialogName, setDialogAnswer] = useDialog();
+
   // UIStore
+  const promptText = useUIStore((state) => state.promptText);
+  const commandHistory = useUIStore((state) => state.commandHistory);
+  const printedLines = useUIStore((state) => state.printedLines);
   const cinEnabled = useUIStore((state) => state.cinEnabled);
   const isTerminalSpeaking = useUIStore((state) => state.isTerminalSpeaking);
-
+  const setPromptText = useUIStore((state) => state.setPromptText);
   // ActionStore
   const action = useActionStore((state) => state.action);
-  const actionType = useActionStore((state) => state.actionType);
   const finishedAction = useActionStore((state) => state.finishedAction);
   const setAction = useActionStore((state) => state.setAction);
-  const setActionType = useActionStore((state) => state.setActionType);
-  const increaseFinishedAction = useActionStore((state) => state.increaseFinishedAction);
-
-  // StoryStore
-  const stories = useStoryStore((state) => state.stories);
-  const increaseStoryCount = useStoryStore((state) => state.increaseStoryCount);
-  const setStoryShown = useStoryStore((state) => state.setStoryShown);
+  const isStory = useActionStore((state) => state.isStory);
+  const isDialog = useActionStore((state) => state.isDialog);
+  const isDialogAnswer = useActionStore((state) => state.isDialogAnswer);
 
   const promptRef = useRef<HTMLInputElement>(null);
   const terminalContainerRef = useRef<HTMLDivElement>(null);
@@ -56,9 +56,6 @@ function App() {
       focusTerminal();
     }
   }, [promptRef]);
-
-  const trim = (str: string): string => str.trimStart().trimEnd();
-  const removeSpaces = (s: string): string => s.replace(/\s+/g, " ").trim();
 
   const handleKeyDown = (e: React.KeyboardEvent): any => {
     // Handles non-printable chars
@@ -93,13 +90,30 @@ function App() {
       setSecondEnter(true);
       return addShakeClass();
     }
-    // Get user input or do next action from `src/data/actions.json`
+    // Get user input or do next action from `src/data/actions`
     if (cinEnabled) {
       setCurrentLineFromHistory(0);
-      const input = removeSpaces(promptText);
-      if (input !== "") print(input, "cin");
+      if (action && isDialogAnswer()) {
+        setDialogAnswer(true);
+      }
     } else {
       doAction();
+    }
+  };
+
+  const doAction = (): void => {
+    const action: Action = actions[finishedAction];
+    setAction(action);
+
+    if (action) {
+      if (isStory()) {
+        setStoryName(action.name);
+      } else if (isDialog()) {
+        setDialogName(action.name);
+      }
+      // else if (isFight()) {
+      //   createFight(action.name);
+      // }
     }
   };
 
@@ -113,30 +127,8 @@ function App() {
     setHasShakeClass(true);
     setTimeout(() => {
       setHasShakeClass(false);
-      // timeout should be the same with animation speed (0.8s, see `.shake` style on the App.module.scss)
+      // Timeout should be the same with animation speed (0.8s, see `.shake` style on the App.module.scss)
     }, 800);
-  };
-
-  const addCommandToHistory = (input: string) => {
-    if (input !== "") {
-      setCommandHistory((prevState) => [...prevState, input]);
-    }
-  };
-
-  const print = (s = "", type: PrintType = "cout") => {
-    // TODO: set add to quee inserted prints
-    setPreviousLines((prevState) => [
-      ...prevState,
-      {
-        type,
-        text: trim(s)
-      }
-    ]);
-
-    if (type === "cin") {
-      addCommandToHistory(s);
-      setPromptText("");
-    }
   };
 
   // Up and down arrows to navigate in the command history
@@ -192,42 +184,6 @@ function App() {
     }
   };
 
-  // Story actions
-  const showStory = async (storyName: string) => {
-    const story = stories.find((s) => s.name === storyName);
-    if (!story) {
-      return print("ERROR! Story missing.");
-    }
-    const index = stories.indexOf(story);
-    print(`${story.text}\n. . .`);
-    setStoryShown(index, true);
-    increaseStoryCount();
-    increaseFinishedAction();
-    setAction(storyName);
-    setActionType("story");
-  };
-
-  function doAction() {
-    const nextAction = actions[finishedAction];
-    // console.log(finishedAction);
-    // console.log(nextAction);
-
-    switch (nextAction.type) {
-      case "story":
-        if (nextAction) showStory(nextAction.name);
-        break;
-      case "dialogue":
-        break;
-      case "dialogueAnswer":
-        break;
-      case "fight":
-        break;
-
-      default:
-        break;
-    }
-  }
-
   return (
     <div className={styles.container}>
       <div className={styles.terminal} onClick={focusTerminalIfTouchDevice} onMouseDown={focusTerminalIfTouchDevice}>
@@ -245,11 +201,12 @@ function App() {
             }}
           ></span>
           <div className={styles.terminalOutput}>
-            {previousLines.map((line, i) => (
+            {printedLines.map((line, i) => (
               <Line
                 key={`line${i}`}
                 type={line.type}
                 command={line.text}
+                textSpeed={line.textSpeed}
                 scrollBottomOnContainer={scrollBottomOnContainer}
                 secondEnter={secondEnter}
                 setSecondEnter={setSecondEnter}

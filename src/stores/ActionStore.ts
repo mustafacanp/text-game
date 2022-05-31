@@ -1,33 +1,41 @@
 import create from "zustand";
 
+import immer from "./immer";
+
+import type { Action } from "../data/actions";
+
 type ActionStore = {
-  action: string | null;
+  action: Action | null;
   actionType: string | null;
   finishedAction: number;
-  dialogueCount: number;
+  dialogCount: number;
   storyCount: number;
-  setAction: (action: string | null) => void;
-  setActionType: (action: string | null) => void;
+  setAction: (action: Action | null) => void;
   increaseFinishedAction: () => void;
-  increaseDialogueCount: () => void;
+  increaseDialogCount: () => void;
+  isStory: () => boolean;
+  isDialog: () => boolean;
+  isDialogAnswer: () => boolean;
 };
 
-const useStore = create<ActionStore>((set) => ({
+const useActionStore = (set: any, get: any) => ({
   action: null,
   actionType: null,
   finishedAction: 0,
-  dialogueCount: 0,
+  dialogCount: 0,
   storyCount: 0,
-  setAction: (action: string | null) => set(() => ({ action })),
-  setActionType: (actionType: string | null) => set(() => ({ actionType })),
+  setAction: (action: Action | null) => set(() => ({ action })),
   increaseFinishedAction: () =>
-    set((state) => ({
+    set((state: ActionStore) => ({
       finishedAction: state.finishedAction + 1
     })),
-  increaseDialogueCount: () =>
-    set((state) => ({
-      dialogueCount: state.dialogueCount + 1
-    }))
-}));
+  increaseDialogCount: () =>
+    set((state: ActionStore) => ({
+      dialogCount: state.dialogCount + 1
+    })),
+  isStory: () => get().action?.type === "story",
+  isDialog: () => get().action?.type === "dialog",
+  isDialogAnswer: () => get().action?.type === "dialogAnswer"
+});
 
-export default useStore;
+export default create<ActionStore>(immer(useActionStore));
