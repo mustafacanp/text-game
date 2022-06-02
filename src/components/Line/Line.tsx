@@ -86,7 +86,7 @@ function Line({
 
   const clearIntervals = () => {
     // TODO: There is a bug here
-    // If text ends with speak, not second enter, it keeps running timers
+    // If text ends with speak (not with the second enter), it keeps running timers
     // That triggers scroll bottom constantly and the user is not able to scroll up to see previous commands
     // console.log(intervals);
     for (let i = 0; i < Object.keys(intervals).length; i++) {

@@ -1,3 +1,28 @@
+@font-face {
+  font-family: "Consolas";
+  src: local("Consolas"), url("./fonts/Consolas.ttf") format("truetype");
+}
+
+* {
+  box-sizing: border-box;
+}
+
+::-moz-selection {
+  background: #fff;
+  color: #000;
+}
+
+::selection {
+  background: #fff;
+  color: #000;
+}
+
+body {
+  margin: 0;
+  background: #000;
+  font-family: "Consolas";
+}
+
 .green {
   color: #0f0;
 }
