@@ -3,10 +3,11 @@ import useUIStore from "../stores/UIStore";
 import useDialogStore from "../stores/DialogStore";
 import useActionStore from "../stores/ActionStore";
 
-import type { Dialog as DialogType } from "../data/dialogs";
+import type { Dialog } from "../data/dialogs";
 
-const Dialog = (): [React.Dispatch<React.SetStateAction<string>>, React.Dispatch<React.SetStateAction<boolean>>] => {
+const useDialog = (): [React.Dispatch<React.SetStateAction<string>>, React.Dispatch<React.SetStateAction<boolean>>] => {
   const [name, setName] = useState<string>("");
+  const [dialog, setDialog] = useState<Dialog | null>(null);
   const [dialogAnswer, setDialogAnswer] = useState<boolean>(false);
 
   // UIStore
@@ -24,26 +25,27 @@ const Dialog = (): [React.Dispatch<React.SetStateAction<string>>, React.Dispatch
 
   useEffect(() => {
     if (!name) return;
-    const dialog: DialogType | undefined = dialogs.find((s) => s.name === name);
-    if (!dialog) {
+    const dia: Dialog | undefined = dialogs.find((s) => s.name === name);
+    if (!dia) {
       console.error(`ERROR! Dialog is missing with name ${name}.`);
       return;
     }
-    addPrintedLine({ text: `${dialog.question}`, skipSpaces: true, textSpeed: dialog.textSpeed });
+    setDialog(dia);
+    addPrintedLine({ text: `${dia.question}`, skipSpaces: true, textSpeed: dia.textSpeed });
     setCinEnabled(true);
     setAction({ name, type: "dialogAnswer" });
 
-    switch (dialog.type) {
+    switch (dia.type) {
       case "text":
         break;
       case "choice":
-        if (dialog.choices) {
-          for (const choice of dialog.choices) {
+        if (dia.choices) {
+          for (const choice of dia.choices) {
             addPrintedLine({
               text: `${choice.id}. ${choice.text}`,
               type: "choice",
               skipSpaces: true,
-              textSpeed: dialog.textSpeed
+              textSpeed: dia.textSpeed
             });
           }
         }
@@ -57,7 +59,6 @@ const Dialog = (): [React.Dispatch<React.SetStateAction<string>>, React.Dispatch
 
   useEffect(() => {
     if (!dialogAnswer) return;
-    const dialog: DialogType | undefined = dialogs.find((s) => s.name === name);
     if (!dialog) {
       console.error(`ERROR! Dialog is missing with name ${name}.`);
       return;
@@ -67,14 +68,14 @@ const Dialog = (): [React.Dispatch<React.SetStateAction<string>>, React.Dispatch
           if (promptText) {
             addPrintedLine({ text: promptText, type: "cin", textSpeed: dialog.textSpeed });
             if (dialog.output) addPrintedLine({ text: dialog.output, textSpeed: dialog.textSpeed });
-            finishDialog(dialog, promptText);
+            finishDialog(promptText);
           }
           break;
         case "choice":
           const choice = dialog.choices!.find((choice) => choice.id === promptText);
           if (choice) {
             addPrintedLine({ text: `${choice.text}`, type: "cin", textSpeed: dialog.textSpeed });
-            finishDialog(dialog, choice.text);
+            finishDialog(choice.text);
           } else {
             // addShakeClass();
           }
@@ -89,17 +90,19 @@ const Dialog = (): [React.Dispatch<React.SetStateAction<string>>, React.Dispatch
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [dialogAnswer]);
 
-  const finishDialog = (dialog: DialogType, answer: string) => {
-    dialog.action && dialog.action();
-    const index = dialogs.indexOf(dialog);
-    setDialogShown(index, true);
-    increaseDialogCount();
-    increaseFinishedAction();
-    addDialogueAnswer(dialog.question, answer);
-    setCinEnabled(false);
+  const finishDialog = (answer: string) => {
+    if (dialog) {
+      dialog.action && dialog.action();
+      const index = dialogs.indexOf(dialog);
+      setDialogShown(index, true);
+      increaseDialogCount();
+      increaseFinishedAction();
+      addDialogueAnswer(dialog.question, answer);
+      setCinEnabled(false);
+    }
   };
 
   return [setName, setDialogAnswer];
 };
 
-export default Dialog;
+export default useDialog;

@@ -3,7 +3,7 @@ import useUIStore from "../stores/UIStore";
 import useStoryStore from "../stores/StoryStore";
 import useActionStore from "../stores/ActionStore";
 
-const Story = (): React.Dispatch<React.SetStateAction<string>> => {
+const useStory = (): React.Dispatch<React.SetStateAction<string>> => {
   const [name, setName] = useState<string>("");
 
   // UIStore
@@ -34,4 +34,4 @@ const Story = (): React.Dispatch<React.SetStateAction<string>> => {
   return setName;
 };
 
-export default Story;
+export default useStory;

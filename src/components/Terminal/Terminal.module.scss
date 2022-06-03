@@ -6,31 +6,26 @@
   justify-content: space-between;
 }
 
-.terminalOutputContainer {
+.animation {
+  padding: 10px;
+  color: #ffa500;
+  white-space: pre-wrap;
+}
+
+.output {
+  flex: 1;
   overflow-y: scroll;
   padding: 20px;
   padding-bottom: 0;
-}
-.terminalOutputContainer::-webkit-scrollbar {
-  width: 12px;
-  border: none;
-}
-.terminalOutputContainer::-webkit-scrollbar-thumb {
-  background: linear-gradient(#504b45 0%, #3c3b37 100%);
-}
-.terminalOutput {
   font-family: "Consolas";
   padding: 10px;
 }
-
-@media screen and (max-width: 991px) {
-  .terminal {
-    width: 100%;
-    height: 100%;
-  }
-  .terminalOutputContainer {
-    height: calc(100% - 25px);
-  }
+.output::-webkit-scrollbar {
+  width: 12px;
+  border: none;
+}
+.output::-webkit-scrollbar-thumb {
+  background: linear-gradient(#504b45 0%, #3c3b37 100%);
 }
 
 .shake {

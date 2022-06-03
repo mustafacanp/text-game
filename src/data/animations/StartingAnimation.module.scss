@@ -1,0 +1,27 @@
+@use "sass:math";
+
+.container {
+  font-size: 12px;
+}
+
+.bird {
+  position: absolute;
+  left: auto;
+  top: auto;
+  animation: 30s fly;
+}
+
+@keyframes fly {
+  $frames: 20;
+  @for $i from 0 through $frames {
+    #{$i * 1%} {
+      transform: translateX($i * 20 + px) translateY(-$i * 10 + px) scale(1 - math.div($i + 1, $frames));
+    }
+  }
+}
+
+@media screen and (max-width: 768px) {
+  .container {
+    font-size: 10px;
+  }
+}

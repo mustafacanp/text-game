@@ -14,6 +14,7 @@ type ActionStore = {
   increaseFinishedAction: () => void;
   increaseDialogCount: () => void;
   isStory: () => boolean;
+  isAnimation: () => boolean;
   isDialog: () => boolean;
   isDialogAnswer: () => boolean;
 };
@@ -35,6 +36,7 @@ const useActionStore = (set: any, get: any) => ({
     })),
   isStory: () => get().action?.type === "story",
   isDialog: () => get().action?.type === "dialog",
+  isAnimation: () => get().action?.type === "animation",
   isDialogAnswer: () => get().action?.type === "dialogAnswer"
 });
 

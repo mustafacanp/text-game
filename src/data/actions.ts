@@ -1,6 +1,6 @@
 /** `actions` is a sequence that keeps the actions of the game's story in order */
 
-type ActionTypes = "story" | "dialog" | "dialogAnswer";
+type ActionTypes = "story" | "dialog" | "dialogAnswer" | "animation";
 
 export type Action = {
   name: string;
@@ -8,6 +8,10 @@ export type Action = {
 };
 
 const actions: Array<Action> = [
+  {
+    type: "animation",
+    name: "starting"
+  },
   {
     type: "story",
     name: "story1"

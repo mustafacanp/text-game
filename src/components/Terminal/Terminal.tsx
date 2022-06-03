@@ -1,5 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { useRef, useState, useEffect } from "react";
+
 import Line from "../Line/Line";
 import PromptLine from "../PromptLine/PromptLine";
 import useUIStore from "../../stores/UIStore";
@@ -8,6 +9,7 @@ import useActionStore from "../../stores/ActionStore";
 import useEventListener from "../../hooks/useEventListener";
 import useStory from "../../hooks/useStory";
 import useDialog from "../../hooks/useDialog";
+import useAnimation from "../../hooks/useAnimation";
 
 import actions from "../../data/actions";
 
@@ -24,6 +26,7 @@ function App() {
 
   const setStoryName = useStory();
   const [setDialogName, setDialogAnswer] = useDialog();
+  const [setAnimationName, showAnimation, renderAnimation] = useAnimation();
 
   // UIStore
   const promptText = useUIStore((state) => state.promptText);
@@ -37,6 +40,7 @@ function App() {
   const finishedAction = useActionStore((state) => state.finishedAction);
   const setAction = useActionStore((state) => state.setAction);
   const isStory = useActionStore((state) => state.isStory);
+  const isAnimation = useActionStore((state) => state.isAnimation);
   const isDialog = useActionStore((state) => state.isDialog);
   const isDialogAnswer = useActionStore((state) => state.isDialogAnswer);
 
@@ -110,6 +114,8 @@ function App() {
         setStoryName(action.name);
       } else if (isDialog()) {
         setDialogName(action.name);
+      } else if (isAnimation()) {
+        setAnimationName(action.name);
       }
       // else if (isFight()) {
       //   createFight(action.name);
@@ -186,32 +192,47 @@ function App() {
 
   return (
     <div className={styles.terminal} onClick={focusTerminalIfTouchDevice} onMouseDown={focusTerminalIfTouchDevice}>
-      <div ref={terminalContainerRef} className={styles.terminalOutputContainer}>
+      <div className={styles.animation}>{showAnimation ? renderAnimation() : null}</div>
+      <div ref={terminalContainerRef} className={styles.output}>
         {/* TODO: remove this element */}
         <span
           style={{
-            backgroundColor: isTerminalSpeaking ? "red" : "green",
+            backgroundColor: cinEnabled ? "green" : "red",
             height: 20,
             width: 20,
             position: "absolute",
-            right: 5,
-            top: 5,
+            right: 10,
+            bottom: 10,
             borderRadius: "50%"
           }}
         ></span>
-        <div className={styles.terminalOutput}>
-          {printedLines.map((line, i) => (
-            <Line
-              key={`line${i}`}
-              type={line.type}
-              command={line.text}
-              textSpeed={line.textSpeed}
-              scrollBottomOnContainer={scrollBottomOnContainer}
-              secondEnter={secondEnter}
-              setSecondEnter={setSecondEnter}
-            />
-          ))}
-        </div>
+        {isTerminalSpeaking && (
+          <span
+            style={{
+              color: "white",
+              backgroundColor: "purple",
+              position: "absolute",
+              right: 5,
+              bottom: 50,
+              borderRadius: 5,
+              padding: 3,
+              fontSize: 12
+            }}
+          >
+            Typing...
+          </span>
+        )}
+        {printedLines.map((line, i) => (
+          <Line
+            key={`line${i}`}
+            type={line.type}
+            command={line.text}
+            textSpeed={line.textSpeed}
+            scrollBottomOnContainer={scrollBottomOnContainer}
+            secondEnter={secondEnter}
+            setSecondEnter={setSecondEnter}
+          />
+        ))}
       </div>
       <PromptLine
         ref={promptRef}
